@@ -6,15 +6,79 @@
     <title>Spotify Player</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* (Seu CSS pode ficar aqui, ele não precisa de grandes modificações) */
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: #121212;
             color: #b3b3b3;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
+            gap: 20px;
+        }
+
+        .login-container {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .login-container h1 {
+            color: #fff;
+        }
+
+        .login-btn {
+            padding: 15px 30px;
+            background-color: #1ed760;
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .login-btn:hover {
+            background-color: #15a84a;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+        
+        .search-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-input {
+            width: 250px;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: #282828;
+            color: #fff;
+            outline: none;
+        }
+
+        .search-btn {
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: none;
+            background-color: #1ed760;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .search-btn:hover {
+            background-color: #15a84a;
         }
 
         .player-container {
@@ -103,109 +167,335 @@
             background-color: #1ed760;
             border-radius: 5px;
         }
+
+        .results-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+            width: 350px;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: #181818;
+            border-radius: 10px;
+            box-shadow: 0 4px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .results-list-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .results-list-item:hover {
+            background-color: #282828;
+        }
+        
+        .results-list-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            margin-right: 15px;
+        }
+
+        .results-list-item .song-info {
+            flex-grow: 1;
+        }
+
+        .results-list-item .song-info .title {
+            color: #fff;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .results-list-item .song-info .artist {
+            color: #b3b3b3;
+            font-size: 0.8em;
+        }
     </style>
 </head>
 <body>
 
-    <div class="player-container">
-        <img src="https://i.scdn.co/image/ab67616d0000b27329431e6c382dd73b5c47864f" alt="Capa do Álbum" class="album-cover" id="album-cover">
-
-        <div class="song-details">
-            <h2 class="song-title" id="song-title">Título da Música</h2>
-            <p class="artist-name" id="artist-name">Nome do Artista</p>
-        </div>
-
-        <div class="controls">
-            <button class="control-btn" id="prev-btn"><i class="fas fa-step-backward"></i></button>
-            <button class="control-btn play-pause-btn" id="play-pause-btn"><i class="fas fa-play"></i></button>
-            <button class="control-btn" id="next-btn"><i class="fas fa-step-forward"></i></button>
-        </div>
-
-        <div class="progress-bar-container">
-            <span class="progress-time" id="current-time">0:00</span>
-            <div class="progress-bar" id="progress-bar">
-                <div class="progress" id="progress"></div>
-            </div>
-            <span class="progress-time" id="duration">0:00</span>
-        </div>
+    <div id="login-container" class="login-container">
+        <h1>Spotify Player</h1>
+        <p>Faça login com sua conta Premium para começar a ouvir.</p>
+        <a href="/login" class="login-btn">Fazer Login com Spotify</a>
     </div>
+    
+    <div id="player-main-container" class="hidden" style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+        <div class="search-container">
+            <input type="text" class="search-input" id="search-input" placeholder="Pesquisar música ou artista...">
+            <button class="search-btn" id="search-btn">Buscar</button>
+        </div>
 
-    <audio id="audio-player" src="caminho/para/sua/musica.mp3"></audio>
+        <div class="player-container">
+            <img src="https://i.scdn.co/image/ab67616d0000b27329431e6c382dd73b5c47864f" alt="Capa do Álbum" class="album-cover" id="album-cover">
+    
+            <div class="song-details">
+                <h2 class="song-title" id="song-title">Título da Música</h2>
+                <p class="artist-name" id="artist-name">Nome do Artista</p>
+            </div>
+    
+            <div class="controls">
+                <button class="control-btn" id="prev-btn"><i class="fas fa-step-backward"></i></button>
+                <button class="control-btn play-pause-btn" id="play-pause-btn"><i class="fas fa-play"></i></button>
+                <button class="control-btn" id="next-btn"><i class="fas fa-step-forward"></i></button>
+            </div>
+    
+            <div class="progress-bar-container">
+                <span class="progress-time" id="current-time">0:00</span>
+                <div class="progress-bar" id="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+                <span class="progress-time" id="duration">0:00</span>
+            </div>
+        </div>
+        
+        <ul class="results-list" id="results-list"></ul>
+    </div>
+    
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
 
     <script>
-        const audioPlayer = document.getElementById('audio-player');
-        const playPauseBtn = document.getElementById('play-pause-btn');
-        const progress = document.getElementById('progress');
-        const progressBar = document.getElementById('progress-bar');
-        const currentTimeEl = document.getElementById('current-time');
-        const durationEl = document.getElementById('duration');
+        const API_URL = 'http://localhost:3000';
+
+        // Elementos do DOM
+        const loginContainer = document.getElementById('login-container');
+        const playerMainContainer = document.getElementById('player-main-container');
+        const searchInput = document.getElementById('search-input');
+        const searchBtn = document.getElementById('search-btn');
+        const resultsList = document.getElementById('results-list');
         const songTitleEl = document.getElementById('song-title');
         const artistNameEl = document.getElementById('artist-name');
         const albumCoverEl = document.getElementById('album-cover');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
 
-        // Dados da música
-        const track = {
-            title: 'Nome da Música',
-            artist: 'Nome do Artista',
-            cover: 'https://i.scdn.co/image/ab67616d0000b27329431e6c382dd73b5c47864f',
-            audioSrc: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' // Substitua pelo link da sua música
-        };
-
-        // Adiciona os dados ao player
-        songTitleEl.textContent = track.title;
-        artistNameEl.textContent = track.artist;
-        albumCoverEl.src = track.cover;
-        audioPlayer.src = track.audioSrc;
-
+        // Variáveis de estado
+        let accessToken = null;
+        let playlist = [];
+        let trackIndex = 0;
         let isPlaying = false;
+        let player = null; // Instância do player do SDK
 
-        function togglePlayPause() {
-            if (isPlaying) {
-                audioPlayer.pause();
-                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-            } else {
-                audioPlayer.play();
-                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        // Função para obter os parâmetros da URL
+        function getHashParams() {
+            const hashParams = {};
+            let e, r = /([^&;=]+)=?([^&;]*)/g,
+                q = window.location.hash.substring(1);
+            while (e = r.exec(q)) {
+                hashParams[e[1]] = decodeURIComponent(e[2]);
             }
-            isPlaying = !isPlaying;
+            return hashParams;
         }
 
-        playPauseBtn.addEventListener('click', togglePlayPause);
+        // Função para obter o token de acesso
+        async function getAccessToken() {
+            const params = getHashParams();
+            let token = localStorage.getItem('spotify_access_token');
 
-        // Atualiza a barra de progresso
-        audioPlayer.addEventListener('timeupdate', () => {
-            const duration = audioPlayer.duration;
-            const currentTime = audioPlayer.currentTime;
-            const progressPercent = (currentTime / duration) * 100;
-            progress.style.width = `${progressPercent}%`;
+            if (params.access_token) {
+                // Se o token vier da URL, armazena
+                token = params.access_token;
+                const refreshToken = params.refresh_token;
+                const expiresIn = params.expires_in;
+                localStorage.setItem('spotify_access_token', token);
+                localStorage.setItem('spotify_refresh_token', refreshToken);
+                localStorage.setItem('expires_at', Date.now() + expiresIn * 1000);
+                // Limpa a URL para esconder os tokens
+                window.location.hash = '';
+            }
 
-            // Atualiza os tempos
-            currentTimeEl.textContent = formatTime(currentTime);
-            durationEl.textContent = formatTime(duration);
-        });
+            // Se o token existir e estiver válido, retorna
+            const expiresAt = localStorage.getItem('expires_at');
+            if (token && expiresAt && Date.now() < expiresAt) {
+                accessToken = token;
+                return accessToken;
+            }
 
-        // Formata o tempo para o formato MM:SS
-        function formatTime(time) {
-            const minutes = Math.floor(time / 60);
-            const seconds = Math.floor(time % 60);
-            return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            // Se o token expirou, tenta renovar
+            if (localStorage.getItem('spotify_refresh_token')) {
+                const refreshToken = localStorage.getItem('spotify_refresh_token');
+                try {
+                    const response = await fetch(`${API_URL}/refresh_token?refresh_token=${refreshToken}`);
+                    const data = await response.json();
+                    accessToken = data.access_token;
+                    const newExpiresAt = Date.now() + data.expires_in * 1000;
+                    localStorage.setItem('spotify_access_token', accessToken);
+                    localStorage.setItem('expires_at', newExpiresAt);
+                    return accessToken;
+                } catch (error) {
+                    console.error('Erro ao renovar o token:', error);
+                    return null;
+                }
+            }
+            
+            return null; // Nenhum token disponível
         }
 
-        // Permite o usuário clicar na barra de progresso para mudar o tempo da música
-        progressBar.addEventListener('click', (e) => {
-            const width = progressBar.clientWidth;
-            const clickX = e.offsetX;
-            const duration = audioPlayer.duration;
-            audioPlayer.currentTime = (clickX / width) * duration;
+        // Função para inicializar o player do Spotify Web Playback SDK
+        async function initPlayer() {
+            const token = await getAccessToken();
+            if (!token) {
+                console.error('Não foi possível obter o token de acesso. Faça o login.');
+                return;
+            }
+
+            // Conecta o player ao Spotify
+            window.onSpotifyWebPlaybackSDKReady = () => {
+                player = new Spotify.Player({
+                    name: 'My Spotify Player',
+                    getOAuthToken: cb => { cb(token); },
+                    volume: 0.5
+                });
+
+                // Eventos do player
+                player.addListener('ready', ({ device_id }) => {
+                    console.log('Player está pronto! ID do dispositivo:', device_id);
+                    // Opcional: Salvar o ID do dispositivo no localStorage
+                });
+
+                player.addListener('not_ready', ({ device_id }) => {
+                    console.log('Player desconectado!', device_id);
+                });
+
+                player.addListener('player_state_changed', (state) => {
+                    if (!state) return;
+                    updateUI(state);
+                });
+
+                player.connect();
+            };
+        }
+
+        // Função para atualizar a interface do usuário (UI) com o estado do player
+        function updateUI(state) {
+            const currentTrack = state.track_window.current_track;
+            if (!currentTrack) return;
+
+            songTitleEl.textContent = currentTrack.name;
+            artistNameEl.textContent = currentTrack.artists.map(a => a.name).join(', ');
+            albumCoverEl.src = currentTrack.album.images[0].url;
+            
+            isPlaying = !state.paused;
+            playPauseBtn.innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+        }
+
+        // Função para buscar músicas (agora envia o token no header)
+        async function searchTracks(query) {
+            const token = await getAccessToken();
+            if (!token) {
+                alert('Sessão expirada. Por favor, faça login novamente.');
+                window.location.reload();
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/search-tracks?q=${encodeURIComponent(query)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro ao buscar músicas: ${response.status} ${response.statusText}`);
+                }
+                const data = await response.json();
+                playlist = data.tracks.items;
+                console.log('Músicas encontradas:', playlist);
+                
+                if (playlist.length > 0) {
+                    renderResultsList();
+                } else {
+                    alert('Nenhuma música encontrada. Tente outra pesquisa.');
+                    resultsList.innerHTML = '';
+                }
+            } catch (error) {
+                console.error('Erro ao buscar músicas:', error);
+                alert('Não foi possível buscar as músicas. Verifique a sua conexão ou se o token está válido.');
+            }
+        }
+
+        // Função para renderizar a lista de resultados
+        function renderResultsList() {
+            resultsList.innerHTML = '';
+            playlist.forEach((track, index) => {
+                const listItem = document.createElement('li');
+                listItem.classList.add('results-list-item');
+                listItem.dataset.index = index;
+                listItem.innerHTML = `
+                    <img src="${track.album.images[2].url}" alt="Capa do Álbum">
+                    <div class="song-info">
+                        <div class="title">${track.name}</div>
+                        <div class="artist">${track.artists.map(artist => artist.name).join(', ')}</div>
+                    </div>
+                `;
+                resultsList.appendChild(listItem);
+            });
+        }
+        
+        // --- Event Listeners e Lógica Principal ---
+        
+        // Botão de busca
+        searchBtn.addEventListener('click', () => {
+            const query = searchInput.value;
+            if (query) {
+                searchTracks(query);
+            }
         });
 
-        // Evento para quando a música terminar
-        audioPlayer.addEventListener('ended', () => {
-            isPlaying = false;
-            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-            progress.style.width = '0%';
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const query = searchInput.value;
+                if (query) {
+                    searchTracks(query);
+                }
+            }
         });
+        
+        // Clicar em um item da lista de resultados
+        resultsList.addEventListener('click', (e) => {
+            const listItem = e.target.closest('.results-list-item');
+            if (listItem) {
+                const index = parseInt(listItem.dataset.index);
+                trackIndex = index;
+                // Usa o player do SDK para tocar a música
+                const trackUri = playlist[index].uri;
+                player.play({
+                    uris: [trackUri]
+                }).catch(error => {
+                    console.error('Erro ao tentar tocar a música:', error);
+                });
+            }
+        });
+        
+        // Controle de Play/Pause (agora com o player do SDK)
+        playPauseBtn.addEventListener('click', () => {
+            if (player) {
+                player.togglePlay();
+            }
+        });
+        
+        // Controle de Next/Prev (ainda precisa ser implementado com o SDK)
+        // Isso é mais complexo pois exige a criação de uma fila
+        // Por enquanto, vamos desativar
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+
+        // Função de inicialização
+        async function init() {
+            accessToken = await getAccessToken();
+            if (accessToken) {
+                loginContainer.classList.add('hidden');
+                playerMainContainer.classList.remove('hidden');
+                initPlayer();
+            }
+        }
+
+        init();
     </script>
-
 </body>
 </html>
