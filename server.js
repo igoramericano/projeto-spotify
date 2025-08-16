@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 
 const CLIENT_ID = '7a36ab2fa1e149cebb0a752a65de4782';
 const CLIENT_SECRET = '7b040f336cc646c18b4a61ca5102c496';
-const REDIRECT_URI = 'http://127.0.0.1:3000/callback';
+const REDIRECT_URI = 'https://projeto-spotify-gilt.vercel.app';
 const stateKey = 'spotify_auth_state';
 
 const app = express();
