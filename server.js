@@ -5,27 +5,22 @@ const path = require('path');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
-// Informações da sua aplicação Spotify
 const CLIENT_ID = '7a36ab2fa1e149cebb0a752a65de4782';
-const CLIENT_SECRET = '4176cb216d9145e19b16ef55b34e0193';
+const CLIENT_SECRET = '7b040f336cc646c18b4a61ca5102c496';
 const REDIRECT_URI = 'http://127.0.0.1:3000/callback';
 const stateKey = 'spotify_auth_state';
 
 const app = express();
 const port = 3000;
 
-app.use(express.json()); // Middleware para ler o corpo das requisições JSON
+app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// URL REAL DA API do Spotify
 const SPOTIFY_API_BASE = 'https://api.spotify.com/v1';
 const SPOTIFY_ACCOUNTS_BASE = 'https://accounts.spotify.com';
 
-/**
- * Função para gerar uma string aleatória de caracteres alfanuméricos.
- */
 const generateRandomString = length => {
   let text = '';
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -35,12 +30,12 @@ const generateRandomString = length => {
   return text;
 };
 
-// Rota de login
 app.get('/login', (req, res) => {
   const state = generateRandomString(16);
   res.cookie(stateKey, state);
 
-  const scope = 'user-read-private user-read-email user-read-currently-playing streaming user-top-read user-modify-playback-state';
+  // AQUI ESTÃO TODAS AS PERMISSÕES NECESSÁRIAS
+  const scope = 'user-read-private user-read-email user-read-currently-playing streaming user-top-read user-modify-playback-state user-library-modify user-library-read user-read-recently-played';
 
   res.redirect(`${SPOTIFY_ACCOUNTS_BASE}/authorize?` +
     querystring.stringify({
@@ -53,17 +48,13 @@ app.get('/login', (req, res) => {
   );
 });
 
-// Rota de callback após a autorização do Spotify
 app.get('/callback', async (req, res) => {
   const code = req.query.code || null;
   const state = req.query.state || null;
   const storedState = req.cookies ? req.cookies[stateKey] : null;
 
   if (state === null || state !== storedState) {
-    res.redirect('/#' +
-      querystring.stringify({
-        error: 'state_mismatch'
-      }));
+    res.redirect('/#' + querystring.stringify({ error: 'state_mismatch' }));
   } else {
     res.clearCookie(stateKey);
     const authOptions = {
@@ -83,20 +74,14 @@ app.get('/callback', async (req, res) => {
     try {
       const response = await axios(authOptions);
       const { access_token, refresh_token, expires_in } = response.data;
-      
       res.redirect(`/#access_token=${access_token}&refresh_token=${refresh_token}&expires_in=${expires_in}`);
-      
     } catch (error) {
       console.error("Erro ao obter o token:", error.response ? error.response.data : error.message);
-      res.redirect('/#' +
-        querystring.stringify({
-          error: 'invalid_token'
-        }));
+      res.redirect('/#' + querystring.stringify({ error: 'invalid_token' }));
     }
   }
 });
 
-// Rota para renovar o token de acesso
 app.get('/refresh_token', async (req, res) => {
   const refreshToken = req.query.refresh_token;
 
@@ -127,7 +112,6 @@ app.get('/refresh_token', async (req, res) => {
   }
 });
 
-// Rota para buscar músicas
 app.get('/search-tracks', async (req, res) => {
   const query = req.query.q;
   const token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : null;
@@ -139,9 +123,7 @@ app.get('/search-tracks', async (req, res) => {
   const searchOptions = {
     url: `${SPOTIFY_API_BASE}/search?q=${encodeURIComponent(query)}&type=track&limit=10`,
     method: 'get',
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
+    headers: { 'Authorization': `Bearer ${token}` }
   };
 
   try {
@@ -153,7 +135,6 @@ app.get('/search-tracks', async (req, res) => {
   }
 });
 
-// Rota para iniciar a reprodução de uma música
 app.put('/play-track', async (req, res) => {
     const { trackUri, deviceId } = req.body;
     const token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : null;
@@ -163,19 +144,14 @@ app.put('/play-track', async (req, res) => {
     }
 
     const playOptions = {
-        // URL REAL PARA INICIAR A REPRODUÇÃO
         url: `${SPOTIFY_API_BASE}/me/player/play`,
         method: 'put',
-        data: {
-            uris: [trackUri]
-        },
+        data: { uris: [trackUri] },
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
         },
-        params: {
-            device_id: deviceId
-        }
+        params: { device_id: deviceId }
     };
 
     try {
@@ -184,6 +160,77 @@ app.put('/play-track', async (req, res) => {
     } catch (error) {
         console.error("Erro ao iniciar a reprodução:", error.response ? error.response.data : error.message);
         res.status(error.response ? error.response.status : 500).json({ error: 'Failed to start playback' });
+    }
+});
+
+app.get('/recently-played', async (req, res) => {
+    const token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : null;
+
+    if (!token) {
+        return res.status(400).json({ error: 'Token is required.' });
+    }
+
+    const playedOptions = {
+        url: `${SPOTIFY_API_BASE}/me/player/recently-played`,
+        method: 'get',
+        headers: { 'Authorization': `Bearer ${token}` }
+    };
+
+    try {
+        const response = await axios(playedOptions);
+        res.json(response.data);
+    } catch (error) {
+        console.error("Erro ao buscar histórico:", error.response ? error.response.data : error.message);
+        res.status(error.response ? error.response.status : 500).json({ error: 'Failed to fetch recently played tracks' });
+    }
+});
+
+app.get('/my-tracks', async (req, res) => {
+    const token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : null;
+
+    if (!token) {
+        return res.status(400).json({ error: 'Token is required.' });
+    }
+
+    const myTracksOptions = {
+        url: `${SPOTIFY_API_BASE}/me/tracks`,
+        method: 'get',
+        headers: { 'Authorization': `Bearer ${token}` }
+    };
+
+    try {
+        const response = await axios(myTracksOptions);
+        res.json(response.data);
+    } catch (error) {
+        console.error("Erro ao buscar músicas da biblioteca:", error.response ? error.response.data : error.message);
+        res.status(error.response ? error.response.status : 500).json({ error: 'Failed to fetch my tracks' });
+    }
+});
+
+app.put('/add-to-library', async (req, res) => {
+    const { trackId } = req.body;
+    const token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : null;
+
+    if (!token || !trackId) {
+        return res.status(400).json({ error: 'Token and track ID are required.' });
+    }
+
+    const addOptions = {
+        url: `${SPOTIFY_API_BASE}/me/tracks`,
+        method: 'put',
+        data: { ids: [trackId] },
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    };
+
+    try {
+        await axios(addOptions);
+        res.status(200).json({ message: 'Track added to library.' });
+    } catch (error) {
+        console.error("Erro ao adicionar a música à biblioteca:", error.response ? error.response.data : error.message);
+        res.status(error.response ? error.response.status : 500).json({ error: 'Failed to add track to library' });
     }
 });
 

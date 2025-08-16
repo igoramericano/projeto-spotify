@@ -3,26 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spotify Player</title>
+    <title>Americano's Spotify</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: #121212;
             color: #b3b3b3;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+        }
+        .sidebar {
+            background-color: #000;
+            width: 250px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .sidebar-title {
+            color: #fff;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .nav-item a {
+            color: #b3b3b3;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: color 0.2s ease;
+        }
+        .nav-item a:hover,
+        .nav-item.active a {
+            color: #fff;
+        }
+        .main-content {
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            gap: 20px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .hidden {
+            display: none !important;
         }
         .login-container {
             text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
+            padding: 50px;
         }
         .login-container h1 {
             color: #fff;
@@ -41,9 +87,6 @@
         }
         .login-btn:hover {
             background-color: #15a84a;
-        }
-        .hidden {
-            display: none !important;
         }
         .search-container {
             display: flex;
@@ -121,6 +164,11 @@
             font-size: 2.5em;
             color: #1ed760;
         }
+        .add-to-library-btn {
+            color: #1ed760;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
         .progress-bar-container {
             width: 100%;
             display: flex;
@@ -187,78 +235,90 @@
 </head>
 <body>
 
-    <div id="login-container" class="login-container">
-        <h1>Spotify Player</h1>
-        <p>Faça login com sua conta Premium para começar a ouvir.</p>
-        <a href="/login" class="login-btn">Fazer Login com Spotify</a>
-    </div>
-    
-    <div id="player-main-container" class="hidden" style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
-        <div class="search-container">
-            <input type="text" class="search-input" id="search-input" placeholder="Pesquisar música ou artista...">
-            <button class="search-btn" id="search-btn">Buscar</button>
+    <div class="app-container">
+        <div class="sidebar">
+            <h2 class="sidebar-title">Americano's Spotify</h2>
+            <ul class="nav-menu">
+                <li class="nav-item active" id="home-nav"><a href="#"><i class="fas fa-home"></i> Início</a></li>
+                <li class="nav-item" id="library-nav"><a href="#"><i class="fas fa-book"></i> Sua Biblioteca</a></li>
+            </ul>
         </div>
-
-        <div class="player-container">
-            <img src="https://via.placeholder.com/250" alt="Capa do Álbum" class="album-cover" id="album-cover">
-    
-            <div class="song-details">
-                <h2 class="song-title" id="song-title">Título da Música</h2>
-                <p class="artist-name" id="artist-name">Nome do Artista</p>
+        <div class="main-content">
+            <div id="login-container" class="login-container">
+                <h1>Spotify Player</h1>
+                <p>Faça login com sua conta Premium para começar a ouvir.</p>
+                <a href="/login" class="login-btn">Fazer Login com Spotify</a>
             </div>
-    
-            <div class="controls">
-                <button class="control-btn" id="prev-btn"><i class="fas fa-step-backward"></i></button>
-                <button class="control-btn play-pause-btn" id="play-pause-btn"><i class="fas fa-play"></i></button>
-                <button class="control-btn" id="next-btn"><i class="fas fa-step-forward"></i></button>
-            </div>
-    
-            <div class="progress-bar-container">
-                <span class="progress-time" id="current-time">0:00</span>
-                <div class="progress-bar" id="progress-bar">
-                    <div class="progress" id="progress"></div>
+            
+            <div id="home-content" class="hidden">
+                <div class="search-container">
+                    <input type="text" class="search-input" id="search-input" placeholder="Pesquisar música ou artista...">
+                    <button class="search-btn" id="search-btn">Buscar</button>
                 </div>
-                <span class="progress-time" id="duration">0:00</span>
+                <div class="player-container">
+                    <img src="https://via.placeholder.com/250" alt="Capa do Álbum" class="album-cover" id="album-cover">
+                    <div class="song-details">
+                        <h2 class="song-title" id="song-title">Título da Música</h2>
+                        <p class="artist-name" id="artist-name">Nome do Artista</p>
+                    </div>
+                    <div class="controls">
+                        <button class="control-btn" id="prev-btn"><i class="fas fa-step-backward"></i></button>
+                        <button class="control-btn play-pause-btn" id="play-pause-btn"><i class="fas fa-play"></i></button>
+                        <button class="control-btn" id="next-btn"><i class="fas fa-step-forward"></i></button>
+                        <button class="add-to-library-btn" id="add-to-library-btn"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div class="progress-bar-container">
+                        <span class="progress-time" id="current-time">0:00</span>
+                        <div class="progress-bar" id="progress-bar">
+                            <div class="progress" id="progress"></div>
+                        </div>
+                        <span class="progress-time" id="duration">0:00</span>
+                    </div>
+                </div>
+                <ul class="results-list" id="results-list"></ul>
+            </div>
+            
+            <div id="library-content" class="hidden" style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                <h2 style="color: #fff;">Sua Biblioteca</h2>
+                <ul class="results-list" id="library-list" style="width: 100%; max-width: 500px;"></ul>
             </div>
         </div>
-        
-        <ul class="results-list" id="results-list"></ul>
     </div>
     
     <script src="https://sdk.scdn.co/spotify-player.js"></script>
-
     <script>
         const API_URL = 'http://127.0.0.1:3000';
-
         const loginContainer = document.getElementById('login-container');
-        const playerMainContainer = document.getElementById('player-main-container');
+        const homeNav = document.getElementById('home-nav');
+        const libraryNav = document.getElementById('library-nav');
+        const homeContent = document.getElementById('home-content');
+        const libraryContent = document.getElementById('library-content');
         const searchInput = document.getElementById('search-input');
         const searchBtn = document.getElementById('search-btn');
         const resultsList = document.getElementById('results-list');
+        const libraryList = document.getElementById('library-list');
         const songTitleEl = document.getElementById('song-title');
         const artistNameEl = document.getElementById('artist-name');
         const albumCoverEl = document.getElementById('album-cover');
         const playPauseBtn = document.getElementById('play-pause-btn');
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
+        const addToLibraryBtn = document.getElementById('add-to-library-btn');
         const progressBar = document.getElementById('progress-bar');
         const progress = document.getElementById('progress');
         const currentTimeEl = document.getElementById('current-time');
         const durationEl = document.getElementById('duration');
-
         let accessToken = null;
         let deviceId = null;
         let isPlaying = false;
         let currentTrack = null;
         let progressInterval = null;
         let player = null;
-
         function formatTime(ms) {
             const minutes = Math.floor(ms / 60000);
             const seconds = ((ms % 60000) / 1000).toFixed(0);
             return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
         }
-
         function getHashParams() {
             const hashParams = {};
             const q = window.location.hash.substring(1);
@@ -269,7 +329,6 @@
             }
             return hashParams;
         }
-        
         async function initPlayer() {
             window.onSpotifyWebPlaybackSDKReady = () => {
                 player = new Spotify.Player({
@@ -355,6 +414,27 @@
             currentTimeEl.textContent = formatTime(position);
             durationEl.textContent = formatTime(duration);
         }
+        async function addToLibrary(trackId) {
+            try {
+                const response = await fetch(`${API_URL}/add-to-library`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ trackId }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+                if (response.status === 200) {
+                    alert('Música adicionada à sua biblioteca com sucesso!');
+                } else {
+                    const error = await response.json();
+                    alert(`Erro ao adicionar a música: ${error.error}`);
+                }
+            } catch (error) {
+                console.error('Erro ao adicionar a música:', error);
+                alert('Não foi possível adicionar a música à sua biblioteca.');
+            }
+        }
         async function searchTracks(query, retry = false) {
             try {
                 const response = await fetch(`${API_URL}/search-tracks?q=${encodeURIComponent(query)}`, {
@@ -391,18 +471,42 @@
                     throw new Error(`Erro na busca: ${response.statusText}`);
                 }
                 const data = await response.json();
-                renderResultsList(data.tracks.items);
+                renderResultsList(data.tracks.items, resultsList);
             } catch (error) {
                 console.error('Erro ao buscar músicas:', error);
                 alert('Não foi possível buscar as músicas. Verifique sua conexão ou se o token está válido.');
             }
         }
-        function renderResultsList(tracks) {
-            resultsList.innerHTML = '';
-            if (tracks.length === 0) {
+        async function fetchMyTracks() {
+            try {
+                const response = await fetch(`${API_URL}/my-tracks`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+                if (!response.ok) {
+                     if (response.status === 401) {
+                        alert('Sessão expirada. Por favor, faça login novamente.');
+                        window.location = '/login';
+                        return;
+                    }
+                    throw new Error(`Erro ao buscar músicas da biblioteca: ${response.statusText}`);
+                }
+                const data = await response.json();
+                renderResultsList(data.items.map(item => item.track), libraryList);
+            } catch (error) {
+                console.error('Erro ao buscar músicas da biblioteca:', error);
+                alert('Não foi possível carregar suas músicas salvas. Tente novamente.');
+            }
+        }
+        function renderResultsList(tracks, container) {
+            container.innerHTML = '';
+            if (!tracks || tracks.length === 0) { // Adicionado verificação para garantir que tracks não é null ou undefined
                 const li = document.createElement('li');
                 li.textContent = 'Nenhuma música encontrada.';
-                resultsList.appendChild(li);
+                li.style.textAlign = 'center';
+                li.style.padding = '20px';
+                container.appendChild(li);
                 return;
             }
             tracks.forEach(track => {
@@ -416,7 +520,7 @@
                         <div class="artist">${track.artists.map(artist => artist.name).join(', ')}</div>
                     </div>
                 `;
-                resultsList.appendChild(listItem);
+                container.appendChild(listItem);
             });
         }
         resultsList.addEventListener('click', async (e) => {
@@ -444,11 +548,33 @@
                 }
             }
         });
+        addToLibraryBtn.addEventListener('click', () => {
+            if (currentTrack && currentTrack.id) {
+                addToLibrary(currentTrack.id);
+            } else {
+                alert('Nenhuma música está tocando.');
+            }
+        });
         searchBtn.addEventListener('click', () => {
             const query = searchInput.value;
             if (query) {
                 searchTracks(query);
             }
+        });
+        homeNav.addEventListener('click', (e) => {
+            e.preventDefault();
+            homeContent.classList.remove('hidden');
+            libraryContent.classList.add('hidden');
+            homeNav.classList.add('active');
+            libraryNav.classList.remove('active');
+        });
+        libraryNav.addEventListener('click', (e) => {
+            e.preventDefault();
+            homeContent.classList.add('hidden');
+            libraryContent.classList.remove('hidden');
+            homeNav.classList.remove('active');
+            libraryNav.classList.add('active');
+            fetchMyTracks();
         });
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
@@ -488,11 +614,11 @@
             }
             if (accessToken) {
                 loginContainer.classList.add('hidden');
-                playerMainContainer.classList.remove('hidden');
+                homeContent.classList.remove('hidden');
                 await initPlayer();
             } else {
                 loginContainer.classList.remove('hidden');
-                playerMainContainer.classList.add('hidden');
+                homeContent.classList.add('hidden');
             }
         })();
     </script>
