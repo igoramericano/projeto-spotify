@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 
 const CLIENT_ID = '7a36ab2fa1e149cebb0a752a65de4782';
 const CLIENT_SECRET = '7b040f336cc646c18b4a61ca5102c496';
-const REDIRECT_URI = 'https://projeto-spotify-gilt.vercel.app';
+const REDIRECT_URI = 'https://projeto-spotify-gilt.vercel.app/callback'; // CORRIGIDO
 const stateKey = 'spotify_auth_state';
 
 const app = express();
@@ -34,7 +34,6 @@ app.get('/login', (req, res) => {
   const state = generateRandomString(16);
   res.cookie(stateKey, state);
 
-  // AQUI ESTÃO TODAS AS PERMISSÕES NECESSÁRIAS
   const scope = 'user-read-private user-read-email user-read-currently-playing streaming user-top-read user-modify-playback-state user-library-modify user-library-read user-read-recently-played';
 
   res.redirect(`${SPOTIFY_ACCOUNTS_BASE}/authorize?` +
@@ -234,7 +233,4 @@ app.put('/add-to-library', async (req, res) => {
     }
 });
 
-app.listen(port, () => {
-  console.log(`Servidor rodando em http://localhost:${port}`);
-  console.log(`Abra http://localhost:${port} no seu navegador.`);
-});
+module.exports = app;
